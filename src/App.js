@@ -12,6 +12,10 @@ let Dict = styled.div`
     margin: 0 auto;
     padding: 0 4px;
 	
+	& ol {
+		margin-top: 0;
+	}
+	
 	& ol li {
 		margin-left: 1rem;
 	}
@@ -21,20 +25,25 @@ let Head = styled.div`
     top: 0px;
     position: sticky;
     background: white;
-	padding-bottom: 10px;
+	padding-bottom: 1rem;
+	font-size:1.2rem;
 	
 	& > div {
 		display: flex;
 		justify-content: space-evenly;
 	}
 	
-	input {    
+	input {
 		flex-grow: 1;
 	}
 	
-	a {
-		margin-left:0.2rem;
-		margin-right:0.2rem;
+	.tabLink {
+		padding: 0.2rem;
+		margin-top:0.1rem;
+		margin-left:0.1rem;
+		margin-right:0.1rem;
+		margin-bottom:0.1rem;
+		cursor: pointer;
 	}
 `
 
@@ -57,7 +66,7 @@ function App() {
 	let tabIndex = Math.max(Math.min(_tabIndex, words.length/PAGECOUNT-1), 0)
 	
 	useDebouncedEffect(()=>{
-		let _searchText = searchText.trim()
+		let _searchText = inputRef.current.value.trim()
 		if (_searchText.length>0) {
 			try {
 				let patterns = _searchText.split(' ').filter(e=>e).map(e=>new RegExp(e))
@@ -65,19 +74,23 @@ function App() {
 			} catch {}
 		} else
 			setWords(WORDS);
-	}, [searchText], 800)
+	}, [searchText, inputRef], 500)
+	
+	console.log(searchText)
 	
 	useEffect(()=>{
 		
-		inputRef.current && wanakana.bind(inputRef.current, {customKanaMapping: { '.': '.', '^':'^', '$':'$', '+':'+', '?':'?', '[':'[', ']':']' }})
+		inputRef.current && wanakana.bind(inputRef.current, {
+			customKanaMapping: { '.': '.', '^':'^', '$':'$', '+':'+', '?':'?', '[':'[', ']':']' }
+		})
 	}, [inputRef])
 	
 	let tabLinks = []
 	for (let i=0; i<Math.ceil(words.length/PAGECOUNT); i+=1) {
 		if (tabIndex!==i) {
-			tabLinks.push(<a onClick={evt=>setTabIndex(i)}>{i+1}</a>)
+			tabLinks.push(<span className="tabLink" onClick={evt=>setTabIndex(i)}>{i+1}</span>)
 		} else {
-			tabLinks.push(<b>{i+1}</b>)
+			tabLinks.push(<b className="tabLink">{i+1}</b>)
 		}
 	}
 	
