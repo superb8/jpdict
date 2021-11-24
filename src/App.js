@@ -75,7 +75,7 @@ function App() {
 	let tabLinks = []
 	for (let i=0; i<Math.ceil(words.length/PAGECOUNT); i+=1) {
 		if (tabIndex!==i) {
-			tabLinks.push(<a href="#" onClick={evt=>setTabIndex(i)}>{i+1}</a>)
+			tabLinks.push(<a onClick={evt=>setTabIndex(i)}>{i+1}</a>)
 		} else {
 			tabLinks.push(<b>{i+1}</b>)
 		}
