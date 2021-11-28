@@ -96,18 +96,29 @@ function App() {
 	
 	useEffect(()=>{
 		(async function() {
-			let r_dictmap = await axios.get(urlJoin(window.location.href, 'dict_map.json'))
-			let r_dictionary = await axios.get(urlJoin(window.location.href, 'dictionary.json'))
-			setDictMap(r_dictmap.data)
-			setDictionary(r_dictionary.data)
+			try {
+				let r_dictionary = await axios.get(urlJoin(window.location.href, 'dictionary.json'))
+				let r_dictmap = await axios.get(urlJoin(window.location.href, 'dict_map.json'))
+				
+				if (r_dictionary.data.length>0 && r_dictmap.data.length>0) {
+					setDictionary(r_dictionary.data)
+					setDictMap(r_dictmap.data)
+				}
+			} catch(e) {
+				console.error('cannot load dictionary file')
+			}
 		})()
 	}, [])
 	
 	useEffect(()=>{
-		if (dictMap.length>0 && dictionary.length>0)
+		if (dictMap.length>0 && dictionary.length>0) {
 			setSearchKeyword(WORDS.map(([i,w,n])=>{
-				return dictMap[i].map(id=>[...dictionary[id][0], ...dictionary[id][1]]).flat().map(e=>wanakana.toKatakana(e))
+				if (dictMap[i].length>0) {
+					return dictMap[i].map(id=>[w, ...dictionary[id][0], ...dictionary[id][1]]).flat().map(e=>wanakana.toKatakana(e))
+				} else
+					return [wanakana.toKatakana(w)]
 			}))
+		}
 	}, [dictMap, dictionary])
 	
 	useEffect(()=>{
@@ -130,7 +141,7 @@ function App() {
 		} else
 			setWords(WORDS);
 		let elapsed = window.performance.now() - start;
-		console.log(`search: "${patterns}" [${elapsed}]`)
+		console.debug(`search: ${patterns} [${elapsed}]`)
 	}, [searchText, searchKeyword], 500)
 	
 	useEffect(()=>{
@@ -151,7 +162,7 @@ function App() {
 	return (
 		<Dict>
 			<Head>
-				<div>搜索：<input ref={inputRef} onKeyDown={evt=>setSearchText(evt.target.value)}/></div>
+				<div>{'Search：'}<input ref={inputRef} onChange={evt=>setSearchText(evt.target.value)} onKeyDown={evt=>setSearchText(evt.target.value)}/></div>
 				<div>{tabLinks}</div>
 			</Head>
 			
@@ -165,12 +176,12 @@ function App() {
 			<ReactTooltip id='dict-tooltip' delayHide={1000} place="right" type="info" effect="solid" getContent={(id) => { 
 				id = parseInt(id)
 				if (id>=0 && dictMap[id]) {
-					const matches = dictMap[id].map(dictIndex=>[dictIndex, dictionary[dictIndex]])
+					const matches = dictMap[id].map(dictIndex=>[dictIndex, dictionary[dictIndex]]).filter(e=>e[1])
 					if (matches && matches.length>0) {
 						return matches.map(([dictIndex, match])=>(
 							<div key={"dictionary"+dictIndex}>
 								<div>
-									<span className="kanji">{match[0].join(", ")}</span>
+									<span className="kanji">{match[0].join(", ") || match[1][0]}</span>
 									<span className="r">({match[1].join(", ")})</span>
 								</div>
 								<ol>{
