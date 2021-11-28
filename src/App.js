@@ -4,6 +4,9 @@ import './App.css';
 import RAW_WORDS from './words.json';
 import styled from 'styled-components';
 import * as wanakana from 'wanakana';
+import axios from 'axios'
+import ReactTooltip from 'react-tooltip'
+import urlJoin from 'url-join'
 
 const PAGECOUNT = 1000;
 
@@ -12,12 +15,34 @@ let Dict = styled.div`
     margin: 0 auto;
     padding: 0 4px;
 	
-	& ol {
+	& ol.words {
 		margin-top: 0;
 	}
 	
 	& ol li {
 		margin-left: 1rem;
+	}
+	
+	& ol li:hover {
+		background: #eef;
+	}
+	
+	& .word {
+		display: inline-block;
+		min-width: 4rem;
+	}
+	& #dict-tooltip {
+		.kanji {
+			font-size: 1rem;
+		}
+		.r {
+			font-size: 0.8rem;
+			margin-left:1rem;
+		}
+		ol {
+			padding-inline-start: 0.5rem;
+			margin-top: 0;
+		}
 	}
 `
 
@@ -56,30 +81,59 @@ export const useDebouncedEffect = (effect, deps, delay) => {
     }, [...deps || [], delay]);
 }
 
-let WORDS = RAW_WORDS.map((e,i)=>[i+1,...e])
+let WORDS = RAW_WORDS.map((e,i)=>[i,...e])
+let DEFAULT_SEARCH_KEYWORD = WORDS.map(([i,w,n])=>[wanakana.toKatakana(w)])
 
 function App() {
 	let inputRef = useRef(null);
+	let [dictMap,setDictMap] = useState([])
+	let [dictionary,setDictionary] = useState([])
 	let [searchText,setSearchText] = useState('');
 	let [words,setWords] = useState(WORDS);
 	let [_tabIndex, setTabIndex] = useState(0);
 	let tabIndex = Math.max(Math.min(_tabIndex, words.length/PAGECOUNT-1), 0)
+	let [searchKeyword, setSearchKeyword] = useState(DEFAULT_SEARCH_KEYWORD)
+	
+	useEffect(()=>{
+		(async function() {
+			let r_dictmap = await axios.get(urlJoin(window.location.href, 'dict_map.json'))
+			let r_dictionary = await axios.get(urlJoin(window.location.href, 'dictionary.json'))
+			setDictMap(r_dictmap.data)
+			setDictionary(r_dictionary.data)
+		})()
+	}, [])
+	
+	useEffect(()=>{
+		if (dictMap.length>0 && dictionary.length>0)
+			setSearchKeyword(WORDS.map(([i,w,n])=>{
+				return dictMap[i].map(id=>[...dictionary[id][0], ...dictionary[id][1]]).flat().map(e=>wanakana.toKatakana(e))
+			}))
+	}, [dictMap, dictionary])
+	
+	useEffect(()=>{
+		ReactTooltip.rebuild()
+	}, [words, tabIndex])
 	
 	useDebouncedEffect(()=>{
-		let _searchText = inputRef.current.value.trim()
-		if (_searchText.length>0) {
+		let start = window.performance.now()
+		let patterns = wanakana.toKatakana(inputRef.current.value.trim())
+								.split(' ')
+								.filter(e=>e)
+								.map(e=>new RegExp(e))
+		if (patterns.length>0) {
 			try {
-				let patterns = _searchText.split(' ').filter(e=>e).map(e=>new RegExp(e))
-				setWords(WORDS.filter(([i,w,n])=>patterns.some(p=>p.exec(w))));
+				setWords(WORDS.filter((_,index)=>{
+					let assoc = searchKeyword[index]
+					return patterns.some(p=>assoc.some(a=>p.exec(a)))
+				}));
 			} catch {}
 		} else
 			setWords(WORDS);
-	}, [searchText, inputRef], 500)
-	
-	console.log(searchText)
+		let elapsed = window.performance.now() - start;
+		console.log(`search: "${patterns}" [${elapsed}]`)
+	}, [searchText, searchKeyword], 500)
 	
 	useEffect(()=>{
-		
 		inputRef.current && wanakana.bind(inputRef.current, {
 			customKanaMapping: { '.': '.', '^':'^', '$':'$', '+':'+', '?':'?', '[':'[', ']':']' }
 		})
@@ -88,27 +142,49 @@ function App() {
 	let tabLinks = []
 	for (let i=0; i<Math.ceil(words.length/PAGECOUNT); i+=1) {
 		if (tabIndex!==i) {
-			tabLinks.push(<span className="tabLink" onClick={evt=>setTabIndex(i)}>{i+1}</span>)
+			tabLinks.push(<span key={"tab-"+i} className="tabLink" onClick={evt=>setTabIndex(i)}>{i+1}</span>)
 		} else {
-			tabLinks.push(<b className="tabLink">{i+1}</b>)
+			tabLinks.push(<b key={"tab-"+i} className="tabLink">{i+1}</b>)
 		}
 	}
 	
 	return (
-	<Dict>
-		<Head>
-			<div>搜索：<input ref={inputRef} onChange={evt=>setSearchText(evt.target.value)}/></div>
-			<div>{tabLinks}</div>
-		</Head>
-		
-		<ol>
-		{
-			words.slice(tabIndex*PAGECOUNT, (tabIndex+1)*PAGECOUNT).map(([i,w,n])=>{
-				return <li key={i} value={i}>{w}</li>
-			})
-		}
-		</ol>
-	</Dict>
+		<Dict>
+			<Head>
+				<div>搜索：<input ref={inputRef} onKeyDown={evt=>setSearchText(evt.target.value)}/></div>
+				<div>{tabLinks}</div>
+			</Head>
+			
+			<ol className="words">
+			{
+				words.slice(tabIndex*PAGECOUNT, (tabIndex+1)*PAGECOUNT).map(([i,w,n])=>{
+					return <li key={i} value={i+1}><span className="word" data-tip={i} data-for="dict-tooltip">{w}</span></li>
+				})
+			}
+			</ol>
+			<ReactTooltip id='dict-tooltip' delayHide={1000} place="right" type="info" effect="solid" getContent={(id) => { 
+				id = parseInt(id)
+				if (id>=0 && dictMap[id]) {
+					const matches = dictMap[id].map(dictIndex=>[dictIndex, dictionary[dictIndex]])
+					if (matches && matches.length>0) {
+						return matches.map(([dictIndex, match])=>(
+							<div key={"dictionary"+dictIndex}>
+								<div>
+									<span className="kanji">{match[0].join(", ")}</span>
+									<span className="r">({match[1].join(", ")})</span>
+								</div>
+								<ol>{
+									match[2].map(([pos,explain],index)=>
+										<li key={index}>{explain.join(' / ')}</li>
+									)
+								}</ol>
+							</div>
+						))
+					}
+				}
+				return null;
+			}}/>
+		</Dict>
 	);
 }
 
