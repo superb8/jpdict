@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/jpdict/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/jpdict/static/js/main.dde35894.chunk.js",
-    "main.js.map": "/jpdict/static/js/main.dde35894.chunk.js.map",
-    "runtime-main.js": "/jpdict/static/js/runtime-main.b076b346.js",
-    "runtime-main.js.map": "/jpdict/static/js/runtime-main.b076b346.js.map",
-    "static/js/2.ec04edb2.chunk.js": "/jpdict/static/js/2.ec04edb2.chunk.js",
-    "static/js/2.ec04edb2.chunk.js.map": "/jpdict/static/js/2.ec04edb2.chunk.js.map",
-    "static/js/3.76c5dc9f.chunk.js": "/jpdict/static/js/3.76c5dc9f.chunk.js",
-    "static/js/3.76c5dc9f.chunk.js.map": "/jpdict/static/js/3.76c5dc9f.chunk.js.map",
+    "main.js": "/jpdict/static/js/main.4c2124dc.chunk.js",
+    "main.js.map": "/jpdict/static/js/main.4c2124dc.chunk.js.map",
+    "runtime-main.js": "/jpdict/static/js/runtime-main.51923bac.js",
+    "runtime-main.js.map": "/jpdict/static/js/runtime-main.51923bac.js.map",
+    "static/js/2.163c5a19.chunk.js": "/jpdict/static/js/2.163c5a19.chunk.js",
+    "static/js/2.163c5a19.chunk.js.map": "/jpdict/static/js/2.163c5a19.chunk.js.map",
+    "static/js/3.378b06d0.chunk.js": "/jpdict/static/js/3.378b06d0.chunk.js",
+    "static/js/3.378b06d0.chunk.js.map": "/jpdict/static/js/3.378b06d0.chunk.js.map",
     "index.html": "/jpdict/index.html",
     "static/css/main.8c8b27cf.chunk.css.map": "/jpdict/static/css/main.8c8b27cf.chunk.css.map",
-    "static/js/2.ec04edb2.chunk.js.LICENSE.txt": "/jpdict/static/js/2.ec04edb2.chunk.js.LICENSE.txt"
+    "static/js/2.163c5a19.chunk.js.LICENSE.txt": "/jpdict/static/js/2.163c5a19.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.b076b346.js",
-    "static/js/2.ec04edb2.chunk.js",
+    "static/js/runtime-main.51923bac.js",
+    "static/js/2.163c5a19.chunk.js",
     "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.dde35894.chunk.js"
+    "static/js/main.4c2124dc.chunk.js"
   ]
 }
