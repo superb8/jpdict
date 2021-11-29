@@ -93,8 +93,8 @@ lines = POS.split('\n')
 lines = [ l.strip() for l in lines ]
 lines = [ l for l in lines if len(l)>0 ]
 lines = [ re.split("\t+", l) for l in lines ]
-lines = [ (b,a) for a,b in lines]
-posmap = dict(lines)
+posAbbr = dict([ (i,a) for i,[a,b] in enumerate(lines)])
+posmap = dict([ (b,i) for i,[a,b] in enumerate(lines)])
 
 ########################################################################
 
@@ -154,3 +154,5 @@ with open('public/dictionary.json', 'w', encoding='utf8') as f:
     f.write(json.dumps(dictionary, ensure_ascii=False))
 with open('public/dict_map.json', 'w', encoding='utf8') as f:
     f.write(json.dumps(dict_map, ensure_ascii=False))
+with open('src/posAbbr.json', 'w', encoding='utf8') as f:
+    f.write(json.dumps(posAbbr, ensure_ascii=False))
