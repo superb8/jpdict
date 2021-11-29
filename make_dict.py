@@ -93,7 +93,7 @@ lines = POS.split('\n')
 lines = [ l.strip() for l in lines ]
 lines = [ l for l in lines if len(l)>0 ]
 lines = [ re.split("\t+", l) for l in lines ]
-posAbbr = dict([ (i,a) for i,[a,b] in enumerate(lines)])
+posAbbr = dict([ (i,[a,b]) for i,[a,b] in enumerate(lines)])
 posmap = dict([ (b,i) for i,[a,b] in enumerate(lines)])
 
 ########################################################################

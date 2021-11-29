@@ -133,11 +133,12 @@ let Badge = styled.span`
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: 0.25rem;
+    user-select: none !important;
 	
 	color: #fff;
     background-color: #17a2b8;
 	margin-left: 0.25rem!important;
-	margin-left: 0.25rem!important;
+	margin-right: 0.25rem!important;
 `
 
 let ExplainArea = styled.div`
@@ -148,6 +149,7 @@ let ExplainArea = styled.div`
 	
 	span.k {
 		font-size: 1.5rem;
+		font-weight: bold;
 	}
 	span.r {
 		font-size: 0.9rem;
@@ -166,11 +168,11 @@ let ExplainArea = styled.div`
 let Meaning = ({data}) => {
 	if (!Array.isArray(data) || data.length!==4) 
 		return <div/>
-	let k = data[0].join(", ")
+	let k = data[0].join("・")
 	let r = data[1].join(", ")
 	
 	let explains = data[2].map(([pos,explain],index)=>
-		<li key={index}>{pos.map((p,i)=>posMap[p]({key: i}))} {explain.join(' / ')}</li>
+		<li key={index}>{pos.map((p,i)=>posMap[p]({key: i}))}{explain.join(' / ')}</li>
 	)
 	let examples = data[3].map(([jpn,eng],index)=>
 		<li key={index}>
@@ -180,7 +182,10 @@ let Meaning = ({data}) => {
 	)
 	return (
 	<div>
-		<div><span className="k">{k}</span><span className="r">{r}</span></div>
+		<div>
+			<span className="k">{k || r}</span>
+			{ k && (<span className="r">{r}</span>)}
+		</div>
 		<ol>
 			{explains}
 		</ol>
