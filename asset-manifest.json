@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/jpdict/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/jpdict/static/js/main.a78b4e5f.chunk.js",
-    "main.js.map": "/jpdict/static/js/main.a78b4e5f.chunk.js.map",
+    "main.js": "/jpdict/static/js/main.fd6ea4b8.chunk.js",
+    "main.js.map": "/jpdict/static/js/main.fd6ea4b8.chunk.js.map",
     "runtime-main.js": "/jpdict/static/js/runtime-main.51923bac.js",
     "runtime-main.js.map": "/jpdict/static/js/runtime-main.51923bac.js.map",
     "static/js/2.163c5a19.chunk.js": "/jpdict/static/js/2.163c5a19.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.51923bac.js",
     "static/js/2.163c5a19.chunk.js",
     "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.a78b4e5f.chunk.js"
+    "static/js/main.fd6ea4b8.chunk.js"
   ]
 }
