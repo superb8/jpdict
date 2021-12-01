@@ -25,6 +25,11 @@ let Dict = styled.div`
 	height: 100%;
 	position: relative;
 	
+	
+	#dict-tooltip {
+		max-width: 30rem;
+	}
+	
 	@media (max-width: 575px) {
 		width:100%;
 		ol.words {
@@ -80,13 +85,25 @@ let Head = styled.div`
 	padding-bottom: 1rem;
 	font-size:1.2rem;
 	
-	& > div,label {
+	label {
 		display: flex;
 		justify-content: space-evenly;
+		font-size:1.5rem;
+		
+		input {
+			flex-grow: 1;
+			font-size:1.5rem;
+		}
 	}
 	
-	input {
-		flex-grow: 1;
+	& > div {
+		display: flex;
+		justify-content: space-evenly;
+		
+		span,b {
+			flex-grow: 1;
+			text-align: center;
+		}
 	}
 	
 	.tabLink {
@@ -110,7 +127,7 @@ let Body = styled.div`
 		margin-top: 0;
 		overflow-y: auto;
 		height: 100%;
-		width:200px;
+		min-width:200px;
 	}
 	
 	& ol.words li.selected {
