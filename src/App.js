@@ -13,6 +13,10 @@ import {useDebouncedEffect, useMediaQuery} from './hooks'
 
 const PAGECOUNT = 1000;
 
+let wanakana_opt = {
+	customKanaMapping: { '.': '.', '^':'^', '$':'$', '+':'+', '?':'?', '[':'[', ']':']' }
+}
+
 let FixedPosition = styled.div`
 	position:fixed;
 	top:0;bottom:0;
@@ -236,7 +240,7 @@ let posMap = Object.fromEntries(
 	)
 
 let WORDS = RAW_WORDS.map((e,i)=>[i,e[0],JLPT[i]])
-let DEFAULT_SEARCH_KEYWORD = WORDS.map(([i,w,n])=>[wanakana.toKatakana(w)])
+let DEFAULT_SEARCH_KEYWORD = WORDS.map(([i,w,n])=>[wanakana.toKatakana(w, wanakana_opt)])
 let DEFAULT_SELECTED_INDEX = Math.floor(Math.random()*WORDS.length)
 
 function App() {
@@ -270,9 +274,9 @@ function App() {
 		if (dictMap.length>0 && dictionary.length>0) {
 			setSearchKeyword(WORDS.map(([i,w,n])=>{
 				if (dictMap[i].length>0) {
-					return dictMap[i].map(id=>[w, ...dictionary[id][0], ...dictionary[id][1]]).flat().map(e=>wanakana.toKatakana(e))
+					return dictMap[i].map(id=>[w, ...dictionary[id][0], ...dictionary[id][1]]).flat().map(e=>wanakana.toKatakana(e, wanakana_opt))
 				} else
-					return [wanakana.toKatakana(w)]
+					return [wanakana.toKatakana(w, wanakana_opt)]
 			}))
 		}
 	}, [dictMap, dictionary])
@@ -283,7 +287,7 @@ function App() {
 	
 	useDebouncedEffect(()=>{
 		let start = window.performance.now()
-		let patterns = wanakana.toKatakana(inputRef.current.value.trim())
+		let patterns = wanakana.toKatakana(inputRef.current.value.trim(), wanakana_opt)
 								.split(' ')
 								.filter(e=>e)
 								.map(e=>new RegExp(e))
@@ -301,9 +305,7 @@ function App() {
 	}, [searchText, searchKeyword], 500)
 	
 	useEffect(()=>{
-		inputRef.current && wanakana.bind(inputRef.current, {
-			customKanaMapping: { '.': '.', '^':'^', '$':'$', '+':'+', '?':'?', '[':'[', ']':']' }
-		})
+		inputRef.current && wanakana.bind(inputRef.current, wanakana_opt)
 	}, [inputRef])
 	
 	const largeMode = useMediaQuery('(min-width: 576px)');
