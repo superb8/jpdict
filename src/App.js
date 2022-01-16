@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import './App.css';
 import posAbbr from './posAbbr.json';
 import RAW_WORDS from './words.json';
+import JLPT from './jlpt.json';
 import styled from 'styled-components';
 import * as wanakana from 'wanakana';
 import axios from 'axios'
@@ -36,10 +37,6 @@ let Dict = styled.div`
 			width: 100% !important;
 			padding-left:3rem;
 			padding-right:3rem;
-			
-			li .word {
-				width: 100%;
-			}
 		}
 	}
 	
@@ -89,6 +86,7 @@ let Head = styled.div`
 		display: flex;
 		justify-content: space-evenly;
 		font-size:1.5rem;
+		margin:0 0.8rem;
 		
 		input {
 			flex-grow: 1;
@@ -136,7 +134,7 @@ let Body = styled.div`
 	
 	& ol.words li .word {
 		display: inline-block;
-		min-width: 4rem;
+		min-width: 5rem;
 	}
 `
 
@@ -154,6 +152,24 @@ let Badge = styled.span`
 	
 	color: #fff;
     background-color: #17a2b8;
+	margin-left: 0.25rem!important;
+	margin-right: 0.25rem!important;
+`
+
+let JLPTBadge = styled.span`
+	display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    user-select: none !important;
+	
+	color: #fff;
+    background-color: #b8a230;
 	margin-left: 0.25rem!important;
 	margin-right: 0.25rem!important;
 `
@@ -219,9 +235,9 @@ let posMap = Object.fromEntries(
 		)] )
 	)
 
-let WORDS = RAW_WORDS.map((e,i)=>[i,...e])
+let WORDS = RAW_WORDS.map((e,i)=>[i,e[0],JLPT[i]])
 let DEFAULT_SEARCH_KEYWORD = WORDS.map(([i,w,n])=>[wanakana.toKatakana(w)])
-let DEFAULT_SELECTED_INDEX = Math.ceil(Math.random()*WORDS.length)
+let DEFAULT_SELECTED_INDEX = Math.floor(Math.random()*WORDS.length)
 
 function App() {
 	let inputRef = useRef(null);
@@ -320,7 +336,12 @@ function App() {
 						}
 						if (i===selectedIndex)
 							props['className'] = 'selected'
-						return <li {...props}><span className="word" data-tip={i} data-for="dict-tooltip">{w}</span></li>
+						return (
+							<li {...props}>
+								<span className="word" data-tip={i} data-for="dict-tooltip">{w}</span>
+								{n>0 && [' ', <JLPTBadge>JLPT {n}</JLPTBadge>]}
+							</li>
+						)
 					})
 				}
 				</ol>
